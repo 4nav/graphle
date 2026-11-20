@@ -30,4 +30,11 @@ export interface Puzzle {
     keyFeatures?:KeyFeatures;
 }
 
-
+export interface ScoreRes{
+    total: number;
+    shape: number;
+    turning: number | null;
+    intercepts: number | null;
+    slices: number[];
+    worstX: number[];
+}

@@ -1,6 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import type { GraphFn, Viewport } from "../types";
 import { sampledToGraphFn } from "../lib/sampledGraph";
+import { TEMPLATES } from "../lib/desmosTemplates";
 
 declare const Desmos: any;
 
@@ -8,6 +9,10 @@ const N = 1001;
 
 export interface DesmosEditorHandle {
     sample: () => Promise<GraphFn[]>;
+    addTemplate: (id:string) => void;
+    undo: () => void;
+    redo: () => void;
+    clear: () => void;
 }
 
 interface Props{
@@ -64,6 +69,7 @@ const DesmosEditor = forwardRef<DesmosEditorHandle, Props>(function DesmosEditor
             hidden: true,
             secret: true,
         });
+        calc.clearHistory();
     }, [xMin, xMax, yMin, yMax]);
 
     useEffect(() => {
@@ -87,6 +93,12 @@ const DesmosEditor = forwardRef<DesmosEditorHandle, Props>(function DesmosEditor
             console.log("[sample] state list:", calc.getState().expressions.list);
 
             const {xMin, xMax} = viewportRef.current;
+            calc.setExpression({
+                id: "S",
+                latex: `S=${xMin}+\\left[0...${N-1}\\right]\\cdot${(xMax-xMin) / (N-1)}`,
+                hidden: true,
+                secret: true,
+            });
             const res: (number[] | null)[] = bodies.map(() => null);
             const helpers: any[] = [];
             const ids: string[] = [];
@@ -119,6 +131,47 @@ const DesmosEditor = forwardRef<DesmosEditorHandle, Props>(function DesmosEditor
                 });
             });
         }),
+        addTemplate:(id:string) => {
+            const calc = calcRef.current;
+            const t = TEMPLATES.find((t) => t.id === id);
+            if(!calc || !t)return;
+
+            const state = calc.getState();
+            const ids = new Set(t.exprs.map((e) => e.id));
+
+            const list = state.expressions.list.filter((e:any) => !ids.has(e.id));
+
+            for(const e of t.exprs){
+                const ex: any = {type: "expression", id: e.id, latex: e.latex};
+                if(e.color)ex.color = e.color;
+                if(e.hidden){ex.hidden = true; ex.secret = true;}
+                if(e.drag){
+                    ex.dragMode = Desmos.DragModes.XY;
+                    ex.showLabel = true;
+                    ex.label = e.label??"drag";
+                }
+                if(e.dashed)ex.lineStyle = Desmos.Styles.DASHED;
+                if(e.slider){
+                    ex.sliderBounds = {
+                        min: String(e.slider[0]),
+                        max: String(e.slider[1]),
+                        step: String(e.slider[2]),
+                    };
+                }
+                list.push(ex);
+            }
+            state.expressions.list = list;
+            calc.setState(state, {allowUndo: true});
+        },
+        undo: () => calcRef.current?.undo(),
+        redo: () => calcRef.current?.redo(),
+        clear: () => {
+            const calc = calcRef.current;
+            if(!calc)return;
+            const {xMin, xMax, yMin, yMax} = viewportRef.current;
+            calc.setBlank({allowUndo: true});
+            calc.setMathBounds({left: xMin, right: xMax, bottom: yMin, top: yMax});
+        },
     }));
 
     return <div ref={elRef} style={{width: "100%", height: "100%"}}/>;

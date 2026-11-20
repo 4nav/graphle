@@ -3,6 +3,7 @@ import DesmosEditor, {type DesmosEditorHandle} from "./components/DesmosEditor";
 import { parseExpression } from "./lib/expressionParser";
 import { firstDefined } from "./lib/sampledGraph";
 import type { Viewport } from "./types";
+import { TEMPLATES } from "./lib/desmosTemplates";
 
 const VIEWPORT: Viewport = {xMin: -10, xMax: 10, yMin: -10, yMax: 10};
 
@@ -39,8 +40,16 @@ export default function App() {
       <div style={{flex: 1, minHeight: 0}}>
         <DesmosEditor ref={editorRef} viewport={VIEWPORT}/>
       </div>
-      <div style={{padding: 12, background: "#15161b", color: "#c9cdd4", display: "flex", gap: 12}}>
+      <div style={{padding: 12, background: "#15161b", color: "#c9cdd4", display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap"}}>
         <button onClick={submit}>Submit</button>
+        <button onClick={() => editorRef.current?.undo()}>Undo</button>
+        <button onClick={() => editorRef.current?.redo()}>Redo</button>
+        <button onClick={() => editorRef.current?.clear()}>Clear</button>
+        {TEMPLATES.map((t)=> (
+          <button key={t.id} onClick={() => editorRef.current?.addTemplate(t.id)}>
+            {t.label}
+          </button>
+        ))}
         <span>{res}</span>
       </div>
     </div>
