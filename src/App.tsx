@@ -4,8 +4,10 @@ import { parseExpression } from "./lib/expressionParser";
 import { firstDefined } from "./lib/sampledGraph";
 import type { Viewport } from "./types";
 import { TEMPLATES } from "./lib/desmosTemplates";
+import { Score } from "./lib/GraphScoring";
 
 const VIEWPORT: Viewport = {xMin: -10, xMax: 10, yMin: -10, yMax: 10};
+const TEST_TARGET = "(x+2)(x+1)(x+3)";
 
 export default function App() {
   const editorRef = useRef<DesmosEditorHandle>(null);
@@ -15,26 +17,18 @@ export default function App() {
     const curves = await editorRef.current?.sample();
     if(!curves || curves.length === 0)return setRes("no functions found");
 
-    const target = parseExpression("0.2(x+2)(x-1)(x-3)");
+    const target = parseExpression(TEST_TARGET);
     if(!target.ok)return setRes(target.error);
 
-    const player = firstDefined(curves);
-    let sum = 0;
-    let cnt = 0;
+    const s = Score(target.fn, firstDefined(curves), VIEWPORT);
 
-    for(let i = 0; i<=200; ++i){
-      const x = VIEWPORT.xMin + (i/200) * (VIEWPORT.xMax - VIEWPORT.xMin);
-      const a = player(x);
-      const b = target.fn(x);
-      if(a !== null && b !== null){
-        sum += Math.abs(a - b);
-        cnt++;
-      }
-    }
-    setRes(cnt?
-      `curves: ${curves.length} | points compared: ${cnt} | mean |diff|: ${(sum / cnt).toFixed(3)}`:"no overlapping points"
+    setRes(
+        `score ${s.total} | shape ${s.shape} | turning ${s.turning ?? "n/a"} | intercepts ${s.intercepts ?? "n/a"} | slices ${s.slices.map((c) => c.toFixed(2)).join(" ")}`
     );
+
   };
+
+  
   return(
     <div style={{display: "flex", flexDirection: "column", height: "100vh"}}>
       <div style={{flex: 1, minHeight: 0}}>

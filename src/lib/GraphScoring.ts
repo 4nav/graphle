@@ -1,7 +1,6 @@
 import type { GraphFn, ScoreRes, Viewport } from "../types";
 
-export const SLICES = 0;
-
+export const SLICES = 8;
 
 const SAMPLES = 400;
 const SIGMA_SHAPE = 0.12;
@@ -71,7 +70,7 @@ export function Score(target: GraphFn, player: GraphFn, vp: Viewport): ScoreRes{
     let tot = 0;
     for(const [w,v] of parts){
         if(v!== null){
-            wSum += W;
+            wSum += w;
             tot += w * v;
         }
     }
