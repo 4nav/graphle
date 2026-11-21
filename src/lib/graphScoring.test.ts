@@ -56,4 +56,9 @@ describe("ScoreGraphs", () => {
     expect(Math.max(...s.slices.slice(4))).toBeLessThan(0.1);
     expect(s.worstX.every((x) => x > 0)).toBe(true);
   });
+  it("two cubics that only agree off-screen get no free credit", () => {
+    const a: GraphFn = (x) => (x + 1) * (x + 2) * (x + 3);
+    const b: GraphFn = (x) => x * x * x - 3 * x;
+    expect(Score(a, b, VP).total).toBeLessThan(40);
+  });
 });

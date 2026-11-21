@@ -3,8 +3,8 @@ import type { GraphFn, ScoreRes, Viewport } from "../types";
 export const SLICES = 8;
 
 const SAMPLES = 400;
-const SIGMA_SHAPE = 0.12;
-const SIGMA_FEATURE = 0.07;
+const SIGMA_SHAPE = 0.15;
+const SIGMA_FEATURE = 0.09;
 const PROMINENCE = 0.03;
 const MARGIN = 0.5;
 const WEIGHTS = {shape: 0.7, turning: 0.15, intercepts: 0.15};
@@ -30,7 +30,15 @@ export function Score(target: GraphFn, player: GraphFn, vp: Viewport): ScoreRes{
         py.push(clamp(player(x)));
     }
 
+    const offSide = (y:number | null) => (y === null ? 0: y > vp.yMax ? 1 : y < vp.yMin ? -1 : 0);
+    const wt = xs.map((_,i) => {
+        const a = offSide(ty[i]);
+        const b = offSide(py[i]);
+        return a !== 0 && a === b ? 0:1;
+    });
+
     const close = xs.map((_, i) => {
+        if(wt[i] === 0)return 1;
         const a= ty[i];
         const b= py[i];
         if(a===null && b===null)return 1;
@@ -38,8 +46,9 @@ export function Score(target: GraphFn, player: GraphFn, vp: Viewport): ScoreRes{
         const z = (a-b) / H / SIGMA_SHAPE;
         return Math.exp(-z * z);
     });
-    const shape = (100 * close.reduce((s,v) => s+v,0))/close.length;
-
+    const wTotal = wt.reduce<number>((s, v) => s + v, 0);
+    const shape = wTotal ? (100 * close.reduce((s, v, i) => s + v * wt[i], 0)) / wTotal : 100;
+    
     const slices:number[] = [];
     const sliceWorstX: number[] = [];
     for(let s = 0; s< SLICES; ++s){
@@ -76,7 +85,7 @@ export function Score(target: GraphFn, player: GraphFn, vp: Viewport): ScoreRes{
     }
     const r = (v:number | null) => (v === null ? null : Math.round(v));
     return{
-        total: Math.round(tot/wSum),
+        total: Math.round(100 * Math.pow(tot / wSum / 100, 0.85)),
         shape: Math.round(shape),
         turning: r(turning),
         intercepts: r(intercepts),

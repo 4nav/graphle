@@ -7,7 +7,7 @@ import { TEMPLATES } from "./lib/desmosTemplates";
 import { Score } from "./lib/GraphScoring";
 
 const VIEWPORT: Viewport = {xMin: -10, xMax: 10, yMin: -10, yMax: 10};
-const TEST_TARGET = "(x+2)(x+1)(x+3)";
+const TEST_TARGET = "(x-2)(x-1)(x-3)";
 
 export default function App() {
   const editorRef = useRef<DesmosEditorHandle>(null);
