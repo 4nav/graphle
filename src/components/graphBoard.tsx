@@ -13,13 +13,14 @@ interface Props{
     viewport: Viewport;
     curves: Curve[];
     hideGrid?: boolean;
+    interactive?:boolean;
 }
 
 const bbox = (v:Viewport): [number, number, number, number] => [v.xMin, v.yMax, v.xMax, v.yMin];
 
 let cnt = 0;
 
-export default function GraphBoard({ viewport, curves, hideGrid = false }: Props){
+export default function GraphBoard({ viewport, curves, hideGrid = false, interactive = true }: Props){
     const [id] = useState(() => `jxg-board-${cnt++}`);
     const boardRef = useRef<JXG.Board | null>(null);
     const drawnRef = useRef<JXG.GeometryElement[]>([]);
@@ -31,8 +32,8 @@ export default function GraphBoard({ viewport, curves, hideGrid = false }: Props
             grid: !hideGrid,
             showCopyright: false,
             showNavigation: false,
-            pan: {enabled: true},
-            zoom: {wheel: true, needShift: false},
+            pan: {enabled: interactive},
+            zoom: {wheel: interactive, needShift: false},
         });
         boardRef.current = board;
         return () => {
@@ -40,7 +41,7 @@ export default function GraphBoard({ viewport, curves, hideGrid = false }: Props
             boardRef.current = null;
             drawnRef.current = [];
         };
-    }, [id, hideGrid]);
+    }, [id, hideGrid, interactive]);
 
     useEffect(() => {
         const board = boardRef.current;

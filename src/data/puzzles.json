@@ -1,0 +1,82 @@
+[
+  {
+    "id": 0,
+    "difficulty": "easy",
+    "viewport": { "xMin": -10, "xMax": 10, "yMin": -10, "yMax": 10 },
+    "targets": ["0.5x+1"],
+    "studyTime": 20,
+    "allowTemplates": true,
+    "hideGrid": false,
+    "isTutorial": true
+  },
+  {
+    "id": 1,
+    "difficulty": "easy",
+    "viewport": { "xMin": -10, "xMax": 10, "yMin": -10, "yMax": 10 },
+    "targets": ["0.3(x-1)^2-4"],
+    "studyTime": 15,
+    "allowTemplates": true,
+    "hideGrid": false,
+    "isTutorial": false
+  },
+  {
+    "id": 2,
+    "difficulty": "easy",
+    "viewport": { "xMin": -10, "xMax": 10, "yMin": -10, "yMax": 10 },
+    "targets": ["-abs(x+2)+5"],
+    "studyTime": 15,
+    "allowTemplates": true,
+    "hideGrid": false,
+    "isTutorial": false
+  },
+  {
+    "id": 3,
+    "difficulty": "medium",
+    "viewport": { "xMin": -10, "xMax": 10, "yMin": -10, "yMax": 10 },
+    "targets": ["0.15(x+4)x(x-3)"],
+    "studyTime": 12,
+    "allowTemplates": true,
+    "hideGrid": false,
+    "isTutorial": false
+  },
+  {
+    "id": 4,
+    "difficulty": "medium",
+    "viewport": { "xMin": -10, "xMax": 10, "yMin": -10, "yMax": 10 },
+    "targets": ["2^x-4"],
+    "studyTime": 12,
+    "allowTemplates": true,
+    "hideGrid": false,
+    "isTutorial": false
+  },
+  {
+    "id": 5,
+    "difficulty": "hard",
+    "viewport": { "xMin": -10, "xMax": 10, "yMin": -10, "yMax": 10 },
+    "targets": ["3sin(1.5x)+1"],
+    "studyTime": 10,
+    "allowTemplates": true,
+    "hideGrid": false,
+    "isTutorial": false
+  },
+  {
+    "id": 6,
+    "difficulty": "hard",
+    "viewport": { "xMin": -10, "xMax": 10, "yMin": -10, "yMax": 10 },
+    "targets": ["4/(x-2)+1"],
+    "studyTime": 10,
+    "allowTemplates": true,
+    "hideGrid": false,
+    "isTutorial": false
+  },
+  {
+    "id": 7,
+    "difficulty": "hard",
+    "viewport": { "xMin": -10, "xMax": 10, "yMin": -10, "yMax": 10 },
+    "targets": ["x < 0 ? 0.2x^3 : 3sin(1.2x)"],
+    "studyTime": 12,
+    "allowTemplates": true,
+    "hideGrid": false,
+    "isTutorial": false
+  }
+]
