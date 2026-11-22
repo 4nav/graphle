@@ -16,7 +16,7 @@ export default function StudyScreen({ puzzle, target, label, onDone }: Props) {
   doneRef.current = onDone;
 
   useEffect(() => {
-    const end = Date.now() + 100 * total;
+    const end = Date.now() + total * 1000;
     const timer = setInterval(() => {
       const rem = (end - Date.now()) / 1000;
       if (rem <= 0) {
@@ -55,10 +55,9 @@ export default function StudyScreen({ puzzle, target, label, onDone }: Props) {
         }}
       >
         <div style={{ width: 200, fontSize: 20 }}>{label}</div>
+
         <div style={{ textAlign: "center" }}>
-          <div style={{ fontSize: 40, lineHeight: 1 }}>
-            Memorise this quick!
-          </div>
+          <div style={{ fontSize: 40, lineHeight: 1 }}>Memorize this!</div>
           <svg
             width="220"
             height="14"
@@ -73,8 +72,11 @@ export default function StudyScreen({ puzzle, target, label, onDone }: Props) {
               strokeLinecap="round"
             />
           </svg>
-          <div style={{ fontSize: 18, color: "#666" }}>just the shape</div>
+          <div style={{ fontSize: 18, color: "#666" }}>
+            just the shape: where it crosses the axes, where it turns
+          </div>
         </div>
+
         <div style={{ width: 200, textAlign: "right" }}>
           <span
             style={{
@@ -85,9 +87,10 @@ export default function StudyScreen({ puzzle, target, label, onDone }: Props) {
           >
             {left.toFixed(1)}
           </span>
-          <span style={{ fontSize: 20 }}>sec</span>
+          <span style={{ fontSize: 20 }}> sec</span>
         </div>
       </div>
+
       <div className="sketch-frame" style={{ flex: 1, minHeight: 0 }}>
         <GraphBoard
           viewport={puzzle.viewport}
