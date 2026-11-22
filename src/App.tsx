@@ -9,6 +9,16 @@ import { Score } from "./lib/GraphScoring";
 import { puzzleForDate, todayKey } from "./lib/puzzleLoader";
 import type { GraphFn, ScoreRes } from "./types";
 import StudyScreen from "./components/startScreen";
+import EndScreen from "./components/endScreen";
+import {
+  currentStreak,
+  fnFromSamples,
+  loadSave,
+  markStarted,
+  recordPlay,
+  sampleFn,
+  writeSave,
+} from "./lib/storage";
 
 type Phase = "intro" | "study" | "play" | "result";
 type Parsed = { fn: GraphFn } | { error: string };
@@ -38,19 +48,52 @@ export default function App() {
     return { fn: firstDefined(fns) };
   }, [puzzle]);
 
-  const [phase, setPhase] = useState<Phase>("intro");
-  const [score, setScore] = useState<ScoreRes | null>(null);
+  const [save, setSave] = useState(() => loadSave(day.dateKey));
+  const prior = save.daily[day.dateKey];
+  const hasRes = !!(prior && prior.score && prior.ys);
+  const [phase, setPhase] = useState<Phase>(() =>
+    hasRes ? "result" : save.started[day.dateKey] ? "play" : "intro",
+  );
+  const [score, setScore] = useState<ScoreRes | null>(() =>
+    hasRes ? prior!.score! : null,
+  );
+  const [player, setPlayer] = useState<GraphFn | null>(() =>
+    hasRes ? fnFromSamples(prior!.ys!, puzzle.viewport) : null,
+  );
   const [msg, setMsg] = useState("");
   const editorRef = useRef<DesmosEditorHandle>(null);
 
-  if ("error" in target)
-    return <p style={{ color: "#c9cdd4" }}>Bad puzzle: {target.error}</p>;
+  if ("error" in target) return <p>Bad puzzle: {target.error}</p>;
+
+  const streak = currentStreak(Object.keys(save.daily), day.dateKey);
+
+  const start = () => {
+    const next = markStarted(save, day.dateKey);
+    setSave(next);
+    writeSave(next);
+    setPhase("study");
+  };
 
   const submit = async () => {
     const curves = await editorRef.current?.sample();
     if (!curves || curves.length === 0)
       return setMsg("Add at least one function first");
-    setScore(Score(target.fn, firstDefined(curves), puzzle.viewport));
+    const pf = firstDefined(curves);
+    const sc = Score(target.fn, pf, puzzle.viewport);
+    setPlayer(() => pf);
+    setScore(sc);
+
+    if (!prior?.score) {
+      const next = recordPlay(save, "daily", {
+        dateKey: day.dateKey,
+        number: day.number,
+        total: sc.total,
+        score: sc,
+        ys: sampleFn(pf, puzzle.viewport),
+      });
+      setSave(next);
+      writeSave(next);
+    }
     setPhase("result");
   };
 
@@ -64,11 +107,14 @@ export default function App() {
           gap: 16,
         }}
       >
-        <h1>PEAK #{day.number}</h1>
+        <h1>GRAPHLE #{day.number}</h1>
         <p>
           {puzzle.difficulty}: study for {puzzle.studyTime}s, then rebuild it
         </p>
-        <button onClick={() => setPhase("study")}>Start</button>
+        {streak > 0 && <p>Streak: {streak}</p>}
+        <button className="primary" onClick={start}>
+          Start
+        </button>
       </div>
     );
   }
@@ -79,7 +125,7 @@ export default function App() {
         puzzle={puzzle}
         target={target.fn}
         onDone={() => setPhase("play")}
-      ></StudyScreen>
+      />
     );
   }
 
@@ -91,7 +137,7 @@ export default function App() {
             ref={editorRef}
             viewport={puzzle.viewport}
             hideGrid={puzzle.hideGrid}
-          ></DesmosEditor>
+          />
         </div>
         <div
           style={{
@@ -100,6 +146,8 @@ export default function App() {
             gap: 8,
             flexWrap: "wrap",
             alignItems: "center",
+            background: "#f1f1f1",
+            borderTop: "1px solid #dcdcdc",
           }}
         >
           {puzzle.allowTemplates &&
@@ -122,30 +170,23 @@ export default function App() {
       </div>
     );
   }
+
+  if (!score || !player) return null;
   return (
-    <div
-      style={{
-        ...page,
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 12,
+    <EndScreen
+      dayNumber={day.number}
+      puzzle={puzzle}
+      target={target.fn}
+      player={player}
+      score={score}
+      streak={streak}
+      onReplay={() => {
+        if (!import.meta.env.DEV) return;
+        setScore(null);
+        setPlayer(null);
+        setMsg("");
+        setPhase("intro");
       }}
-    >
-      <h1>{score?.total}/100</h1>
-      <p>
-        shape {score?.shape} | turning {score?.turning ?? "n/a"} | intercepts{" "}
-        {score?.intercepts ?? "n/a"}
-      </p>
-      <p>{score?.slices.map((c) => c.toFixed(2)).join(" ")}</p>
-      <button
-        onClick={() => {
-          setScore(null);
-          setMsg("");
-          setPhase("intro");
-        }}
-      >
-        Play again
-      </button>
-    </div>
+    />
   );
 }
