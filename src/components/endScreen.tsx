@@ -10,7 +10,11 @@ interface Props {
   player: GraphFn;
   score: ScoreRes;
   streak?: number;
-  onReplay: () => void;
+  practice?: boolean;
+  homeLabel?: string;
+  onHome?: () => void;
+  onRetry?: () => void;
+  onReplay?: () => void;
 }
 
 function Bar({ label, value }: { label: string; value: number | null }) {
@@ -61,6 +65,10 @@ export default function EndScreen({
   player,
   score,
   streak,
+  practice,
+  homeLabel,
+  onHome,
+  onRetry,
   onReplay,
 }: Props) {
   const [copied, setCopied] = useState(false);
@@ -73,7 +81,12 @@ export default function EndScreen({
     [target, player],
   );
   const gap = useMemo(() => ({ a: target, b: player }), [target, player]);
-  const text = shareText(dayNumber, score, streak);
+  const text = shareText(
+    dayNumber,
+    score,
+    practice ? undefined : streak,
+    practice,
+  );
 
   const copy = async () => {
     try {
@@ -137,11 +150,13 @@ export default function EndScreen({
         <button className="primary" onClick={copy}>
           {copied ? "Copied!" : "Copy Result"}
         </button>
-        {onReplay && (
-          <div style={{ marginTop: 24 }}>
-            <button onClick={onReplay}>Play Again (dev only)</button>
-          </div>
-        )}
+        <div
+          style={{ marginTop: 24, display: "flex", gap: 8, flexWrap: "wrap" }}
+        >
+          {onHome && <button onClick={onHome}>{homeLabel ?? "Menu"}</button>}
+          {onRetry && <button onClick={onRetry}>Try again</button>}
+          {onRetry && <button onClick={onReplay}>Play Again(Dev only)</button>}
+        </div>
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <GraphBoard

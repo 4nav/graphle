@@ -1,7 +1,7 @@
 import raw from "../data/puzzles.json";
 import type { Difficulty, Puzzle } from "../types";
 
-export const LAUNCH = "2026-11-21";
+export const LAUNCH = "2026-11-16";
 
 const ALL = raw as unknown as Puzzle[];
 const TUTORIAL = ALL.find((p) => p.isTutorial) ?? null;

@@ -7,9 +7,14 @@ export function emoji(closeness: number): string {
   return "🟥";
 }
 
-export function shareText(num: number, s: ScoreRes, streak?: number): string {
+export function shareText(
+  num: number,
+  s: ScoreRes,
+  streak?: number,
+  practice = false,
+): string {
   const lines = [
-    `GRAPHLE #${num} — ${s.total}/100`,
+    `GRAPHLE #${num}${practice ? " (practice)" : ""} — ${s.total}/100`,
     s.slices.map(emoji).join(""),
   ];
   if (streak && streak > 0) lines.push(`🔥 Streak: ${streak}`);
