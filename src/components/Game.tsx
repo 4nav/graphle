@@ -150,6 +150,7 @@ export default function Game({
       <StudyScreen
         puzzle={puzzle}
         target={target.fn}
+        label={`#${day.number} · ${puzzle.difficulty}${practice ? " · practice" : ""}`}
         onDone={() => setPhase("play")}
       />
     );

@@ -9,7 +9,6 @@ import {
   type DayPuzzle,
 } from "./lib/puzzleLoader";
 import { loadSave, writeSave, type Save } from "./lib/storage";
-import { vi } from "vitest";
 
 type View =
   | { kind: "home" }
