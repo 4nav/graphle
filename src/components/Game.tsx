@@ -16,6 +16,7 @@ import {
   type Save,
 } from "../lib/storage";
 import type { GraphFn, ScoreRes } from "../types";
+import Squiggle from "./Squiggle";
 
 type Phase = "intro" | "study" | "play" | "result";
 type Parsed = { fn: GraphFn } | { error: string };
@@ -119,27 +120,41 @@ export default function Game({
   if (phase === "intro") {
     return (
       <div
+        className="sketch"
         style={{
           ...page,
-          alignItems: "center",
           justifyContent: "center",
-          gap: 16,
+          padding: "0 24px",
+          boxSizing: "border-box",
         }}
       >
-        <h1>
-          GRAPHLE #{day.number}
-          {practice ? "(practice)" : ""}
-        </h1>
-        <p>
-          {puzzle.difficulty}: study for {puzzle.studyTime}s, then rebuild it
-          from memory
-        </p>
-        {streak > 0 && <p>Streak: {streak}</p>}
-        <div style={{ display: "flex", gap: 8 }}>
-          <button onClick={onHome}>Back</button>
-          <button className="primary" onClick={start}>
-            Start
-          </button>
+        <div style={{ width: "100%", maxWidth: 520, margin: "0 auto" }}>
+          <div style={{ fontSize: 24, color: "#666" }}>
+            {practice ? "practice" : "today"}
+          </div>
+          <h1
+            style={{ fontSize: 96, lineHeight: 1, margin: 0, fontWeight: 400 }}
+          >
+            #{day.number}
+          </h1>
+          <Squiggle width={200} />
+          <p style={{ fontSize: 26, margin: "14px 0 6px" }}>
+            {puzzle.difficulty} · {puzzle.studyTime} seconds to look, then
+            rebuild it
+          </p>
+          {streak > 0 && (
+            <p style={{ fontSize: 22, margin: "0 0 6px" }}>streak: {streak}</p>
+          )}
+          <div style={{ display: "flex", gap: 12, marginTop: 24 }}>
+            <button onClick={onHome}>back</button>
+            <button
+              className="primary"
+              style={{ fontSize: 26, padding: "8px 28px" }}
+              onClick={start}
+            >
+              start
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -167,14 +182,15 @@ export default function Game({
           />
         </div>
         <div
+          className="sketch sketch-bar"
           style={{
-            padding: 12,
+            padding: 10,
             display: "flex",
             gap: 8,
             flexWrap: "wrap",
             alignItems: "center",
-            background: "#f1f1f1",
-            borderTop: "1px solid #dcdcdc",
+            background: "#ffffff",
+            borderTop: "3px solid #2b2b2b",
           }}
         >
           {puzzle.allowTemplates &&
@@ -183,16 +199,16 @@ export default function Game({
                 key={t.id}
                 onClick={() => editorRef.current?.addTemplate(t.id)}
               >
-                {t.label}
+                {t.label.toLowerCase()}
               </button>
             ))}
-          <button onClick={() => editorRef.current?.undo()}>Undo</button>
-          <button onClick={() => editorRef.current?.redo()}>Redo</button>
-          <button onClick={() => editorRef.current?.clear()}>Clear</button>
+          <button onClick={() => editorRef.current?.undo()}>undo</button>
+          <button onClick={() => editorRef.current?.redo()}>redo</button>
+          <button onClick={() => editorRef.current?.clear()}>clear</button>
           <button className="primary" onClick={submit}>
-            Submit
+            submit
           </button>
-          <span>{msg}</span>
+          <span style={{ fontSize: 18 }}>{msg}</span>
         </div>
       </div>
     );

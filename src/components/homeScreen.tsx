@@ -1,5 +1,6 @@
 import type { DayPuzzle } from "../lib/puzzleLoader";
 import { bestStreak, currentStreak, type Save } from "../lib/storage";
+import Squiggle from "./Squiggle";
 
 interface Props {
   today: DayPuzzle;
@@ -8,13 +9,6 @@ interface Props {
   onPlayToday: () => void;
   onArchive: () => void;
 }
-
-const stat = (label: string, value: number | string) => (
-  <div style={{ textAlign: "center" }}>
-    <div style={{ fontSize: 28, fontWeight: 700 }}>{value}</div>
-    <div style={{ fontSize: 12, color: "#666" }}>{label}</div>
-  </div>
-);
 
 export default function HomeScreen({
   today,
@@ -27,91 +21,76 @@ export default function HomeScreen({
   const done = !!(rec && rec.score);
   const started = !!save.started[today.dateKey];
   const played = Object.keys(save.daily);
+  const streak = currentStreak(played, today.dateKey);
+  const best = bestStreak(played);
 
   return (
     <div
+      className="sketch"
       style={{
         minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 20,
-        padding: 24,
+        boxSizing: "border-box",
+        padding: "56px, 24px",
         background: "#ffffff",
-        color: "#222222",
       }}
     >
-      <h1 style={{ margin: 0, fontSize: 44 }}>GRAPHLE</h1>
-      <p style={{ margin: 0, color: "#666", textAlign: "center" }}>
-        Memorise a graph for a few seconds, then rebuild it from memory!
-      </p>
-      <div
-        style={{
-          width: 340,
-          maxWidth: "100%",
-          border: "1px solid #dcdcdc",
-          borderRadius: 8,
-          padding: 20,
-          display: "flex",
-          flexDirection: "column",
-          gap: 12,
-        }}
-      >
-        <div style={{ fontSize: 14, color: "#666" }}>
-          Today: #{today.number}· {today.puzzle.difficulty}
+      <div style={{ maxWidth: 520, margin: "0 auto" }}>
+        <h1 style={{ fontSize: 80, lineHeight: 1, margin: 0, fontWeight: 400 }}>
+          GRAPHLE
+        </h1>
+        <Squiggle width={280} />
+        <p style={{ fontSize: 24, margin: "12px 0 40px" }}>
+          Look at a graph for a few seconds, then redraw it from memory!
+        </p>
+
+        <div style={{ fontSize: 20, color: "#666" }}>
+          today · #{today.number} · {today.puzzle.difficulty}
         </div>
         {done ? (
-          <div style={{ fontSize: 32, fontWeight: 700 }}>
+          <div style={{ fontSize: 72, lineHeight: 1.1, margin: "4px 0 12px" }}>
             {rec!.total}
-            <span style={{ fontSize: 16, color: "#888" }}>/100</span>
+            <span style={{ fontSize: 28, color: "#888" }}>/100</span>
           </div>
         ) : (
-          <div style={{ fontSize: 14 }}>
+          <p style={{ fontSize: 22, margin: "6px 0 16px" }}>
             {started
-              ? "You've already seen today's graph, so you'll jump straight to rebuilding it."
+              ? "You've already seen today's graph, no cheating!"
               : `You get ${today.puzzle.studyTime} seconds to study it.`}
-          </div>
+          </p>
         )}
-        <button className="primary" onClick={onPlayToday}>
-          {done
-            ? "See today's score"
-            : started
-              ? "Resume today's puzzle"
-              : "Play today's graphle"}
-        </button>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-around",
-            marginTop: 4,
-          }}
+        <button
+          className="primary"
+          style={{ fontSize: 26, padding: "8px 28px" }}
+          onClick={onPlayToday}
         >
-          {stat("Streak", currentStreak(played, today.dateKey))}
-          {stat("Best streak", bestStreak(played))}
+          {done
+            ? "see today's result"
+            : started
+              ? "Resume"
+              : "play todays puzzle"}
+        </button>
+
+        <p style={{ fontSize: 22, margin: "28px 0 0" }}>
+          streak: {streak} <span style={{ color: "#999" }}>·</span> best: {best}
+        </p>
+        <div style={{ marginTop: 36 }}>
+          <button onClick={onArchive} disabled={!hasArchive}>
+            {hasArchive ? "past puzzles" : "past puzzles(come back tomorrow)"}
+          </button>
+        </div>
+
+        <div style={{ marginTop: 44, fontSize: 21, lineHeight: 1.5 }}>
+          <div>how it works</div>
+          <ol style={{ margin: "6px 0 0", paddingLeft: 24 }}>
+            <li>Study the graph before the timer runs out.</li>
+            <li>
+              Once it vanishes, rebuild what you remember with equations,
+              templates or draggable points.
+            </li>
+            <li>Submit, see how close you got, share the results</li>
+          </ol>
         </div>
       </div>
-      <button onClick={onArchive} disabled={!hasArchive}>
-        {hasArchive ? "Past puzzles" : "Past puzzles (come back tommorow)"}
-      </button>
-
-      <ol
-        style={{
-          margin: 0,
-          paddingLeft: 20,
-          maxWidth: 340,
-          color: "#555",
-          fontSize: 14,
-          lineHeight: 1.6,
-        }}
-      >
-        <li>Study the graph quickly before it disappears</li>
-        <li>
-          It disappears. Rebuild it with equations, templates, or draggable
-          points.
-        </li>
-        <li>Submit to see how close you got, then share your result.</li>
-      </ol>
     </div>
   );
 }

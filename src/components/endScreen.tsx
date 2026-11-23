@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import GraphBoard from "./graphBoard";
+import Squiggle from "./Squiggle";
 import { shareText } from "../lib/shareGrid";
 import type { GraphFn, Puzzle, ScoreRes } from "../types";
 
@@ -18,28 +19,21 @@ interface Props {
 }
 
 function Bar({ label, value }: { label: string; value: number | null }) {
-  if (value === null) return null;
+  if (value === null) return null; // the target has none of these, so nothing was graded
   return (
-    <div style={{ marginBottom: 10 }}>
+    <div style={{ marginBottom: 12 }}>
       <div
         style={{
           display: "flex",
           justifyContent: "space-between",
-          fontSize: 14,
+          fontSize: 22,
         }}
       >
         <span>{label}</span>
         <span>{value}</span>
       </div>
-      <div style={{ height: 8, background: "#e6e6e6", borderRadius: 4 }}>
-        <div
-          style={{
-            width: `${value}%`,
-            height: "100%",
-            background: "#fa7e19",
-            borderRadius: 4,
-          }}
-        />
+      <div className="sketch-track">
+        <div className="sketch-fill" style={{ width: `${value}%` }} />
       </div>
     </div>
   );
@@ -49,11 +43,12 @@ const swatch = (color: string) => (
   <span
     style={{
       display: "inline-block",
-      width: 14,
-      height: 4,
+      width: 22,
+      height: 5,
       background: color,
-      marginRight: 6,
+      marginRight: 8,
       verticalAlign: "middle",
+      borderRadius: 3,
     }}
   />
 );
@@ -100,65 +95,71 @@ export default function EndScreen({
 
   return (
     <div
+      className="sketch"
       style={{
         display: "flex",
         height: "100vh",
+        boxSizing: "border-box",
+        padding: 20,
+        gap: 24,
         background: "#ffffff",
-        color: "#222222",
       }}
     >
-      <div
-        style={{
-          width: 340,
-          padding: 24,
-          overflowY: "auto",
-          borderRight: "1px solid #dcdcdc",
-        }}
-      >
-        <div style={{ fontSize: 14, color: "#666" }}>GRAPHLE #{dayNumber}</div>
-        {score.total}
-        <span style={{ fontSize: 24, color: "#888" }}>/100</span>
+      <div style={{ width: 330, overflowY: "auto" }}>
+        <div style={{ fontSize: 22, color: "#666" }}>
+          GRAPHLE #{dayNumber}
+          {practice ? " (practice)" : ""}
+        </div>
+        <div style={{ fontSize: 100, lineHeight: 1 }}>
+          {score.total}
+          <span style={{ fontSize: 30, color: "#888" }}>/100</span>
+        </div>
+        <Squiggle width={200} />
 
-        <div style={{ margin: "20px 0" }}>
-          <Bar label="Shape" value={score.shape} />
-          <Bar label="Turning Points" value={score.turning} />
-          <Bar label="Intercepts" value={score.intercepts} />
+        <div style={{ margin: "22px 0" }}>
+          <Bar label="shape" value={score.shape} />
+          <Bar label="turning points" value={score.turning} />
+          <Bar label="intercepts" value={score.intercepts} />
         </div>
 
-        <div style={{ fontSize: 14, marginBottom: 16 }}>
-          <div>{swatch("#fa7e19")}Target</div>
-          <div>{swatch("#2d70b3")}Yours</div>
-          <div>{swatch("#c74440")}Where you missed</div>
+        <div style={{ fontSize: 20, marginBottom: 18, lineHeight: 1.5 }}>
+          <div>{swatch("#fa7e19")}target</div>
+          <div>{swatch("#2d70b3")}yours</div>
+          <div>{swatch("#c74440")}where you missed</div>
         </div>
 
-        <div style={{ fontSize: 14, marginBottom: 20 }}>
-          <div style={{ color: "#666" }}>The answer was</div>
-          <code>{puzzle.targets.join(" + ")}</code>
+        <div style={{ fontSize: 20, marginBottom: 20 }}>
+          <div style={{ color: "#666" }}>the answer was</div>
+          <code style={{ fontSize: 17 }}>{puzzle.targets.join("  +  ")}</code>
         </div>
+
         <pre
           style={{
-            background: "#f1f1f1",
-            padding: 12,
-            borderRadius: 4,
-            fontSize: 18,
-            margin: "0 0 10px",
+            fontFamily: "inherit",
+            fontSize: 24,
+            lineHeight: 1.3,
+            margin: "0 0 12px",
+            padding: "10px 14px",
+            border: "2px dashed #2b2b2b",
+            borderRadius: 6,
           }}
         >
           {text}
         </pre>
-
         <button className="primary" onClick={copy}>
-          {copied ? "Copied!" : "Copy Result"}
+          {copied ? "copied!" : "copy result"}
         </button>
+
         <div
-          style={{ marginTop: 24, display: "flex", gap: 8, flexWrap: "wrap" }}
+          style={{ marginTop: 24, display: "flex", gap: 10, flexWrap: "wrap" }}
         >
-          {onHome && <button onClick={onHome}>{homeLabel ?? "Menu"}</button>}
-          {onRetry && <button onClick={onRetry}>Try again</button>}
-          {onRetry && <button onClick={onReplay}>Play Again(Dev only)</button>}
+          {onHome && <button onClick={onHome}>{homeLabel ?? "menu"}</button>}
+          {onRetry && <button onClick={onRetry}>try again</button>}
+          {onReplay && <button onClick={onReplay}>replay (dev)</button>}
         </div>
       </div>
-      <div style={{ flex: 1, minWidth: 0 }}>
+
+      <div className="sketch-frame" style={{ flex: 1, minWidth: 0 }}>
         <GraphBoard
           viewport={puzzle.viewport}
           curves={curves}

@@ -72,3 +72,24 @@ button.primary:hover {
   height: 100%;
   background: #fa7e19;
 }
+
+.sketch button.primary {
+  background: #fa7e19;
+  color: #2b2b2b;
+}
+
+.sketch button.primary:hover {
+  background: #ffa04a;
+}
+
+.sketch button:disabled {
+  color: #999;
+  border-style: dashed;
+  background: transparent;
+  cursor: default;
+}
+
+.sketch-bar button {
+  font-size: 17px;
+  padding: 3px 12px;
+}
