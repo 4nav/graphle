@@ -1,32 +1,49 @@
-# React + TypeScript + Vite
+# graphle
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A daily graphing game. Look at a graph, memorize it, and try to recreate it yourself.
 
-Currently, two official plugins are available:
+**[Play Graphle](https://graphle-tan.vercel.app/)**
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## How to play
 
-## React Compiler
+1. **Study the graph.**
+2. **Recreate it.**
+3. **Get your score.**
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+That's it! The goal is to get as close to the original as possible, not necessarily to find the exact same equation(there's lots of cheese potential).
 
-## Expanding the Oxlint configuration
+## Features
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+- **Daily puzzles:** A new graphing challenge every day.
+- **Difficulty levels:** Easy, medium and hard.
+- **Practice mode:** Go back and attempt previous puzzles.
+- **Interactive graph editor:** Plot and manipulate functions to recreate the target.
+- **Scoring system:** Your graph is evaluated on multiple properties, including its shape, turning points, intercepts and slices.
+- **Streak tracking:** Keep track of your current and best streaks.
+- **Local progress:** Your progress is saved locally.
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
+## Scoring System
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+I realised that we couldn't directly compare equations, since different equations can produce the same graph, so comparing expressions directly wouldn't make much sense.
+
+Instead, my scoring system looks at properties of the resulting graphs.
+
+Some of the things it evaluates include:
+
+- **Shape:** How closely the overall curves match.
+- **Turning points:** Whether the important maxima and minima line up.
+- **Intercepts:** How closely the graphs match at their intercepts.
+- **Slices:** How closely the graphs match at sampled positions.
+
+These contribute to an overall score out of 100.
+
+## Built with
+
+- React
+- TypeScript
+- Vite
+- JSXGraph
+- math.js
+- Vitest
+
+Built for W5 for hackclub terra
